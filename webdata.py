@@ -5,22 +5,36 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import bs4
 from collections import namedtuple
+from functools import partial
+from os import path
 
 
-station = "Haderner Stern"
-chromedriver_path = './drivers/chromedriver_linux64'
+driver_path = './drivers'
+log_path = '/logs'
 
 Arrival = namedtuple("Arrival", "dest type mins")
 
+backends = {'chrome': partial(webdriver.Chrome, executable_path=path.join(driver_path, 'chromedriver_linux64')),
+            'phantomjs': partial(webdriver.PhantomJS, executable_path=path.join(driver_path, 'phantomjs')),
+            }
+
 class MVGClient:
 
-    def __init__(self, station):
+
+
+    def __init__(self, station, backend='phantomjs'):
+        """
+
+        :param station:
+        :param backend: str, ['chrome', 'phantomjs']
+        """
 
         self.station = station
 
         url_fmt_str = "http://www.mvg-live.de/MvgLive/MvgLive.jsp#haltestelle={station}&gehweg=0&zeilen=7&ubahn=true&bus=true&tram=true&sbahn=false"
         self.url = url_fmt_str.format(station=station)
-        self.browser = webdriver.Chrome(executable_path=chromedriver_path)
+
+        self.browser = backends[backend]() if type(backend) == str else backend
 
 
     def __enter__(self):
@@ -70,6 +84,8 @@ class MVGClient:
 
 
 if __name__ == '__main__':
+
+    station = "Haderner Stern"
 
     with MVGClient(station='Haderner Stern') as client:
         arrivals = client.arrival_data
