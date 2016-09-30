@@ -15,7 +15,7 @@ log_path = '/logs'
 Arrival = namedtuple("Arrival", "dest type mins")
 
 backends = {'chrome': partial(webdriver.Chrome, executable_path=path.join(driver_path, 'chromedriver_linux64')),
-            'phantomjs_linux64': partial(webdriver.PhantomJS, executable_path=path.join(driver_path, 'phantomjs_linux64')),
+            'phantomjs': partial(webdriver.PhantomJS, executable_path=path.join(driver_path, 'phantomjs_linux64')),
             }
 
 class MVGClient:
