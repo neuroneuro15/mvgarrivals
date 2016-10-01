@@ -20,6 +20,7 @@ backends = {'chrome': partial(webdriver.Chrome, executable_path=path.join(driver
 
 class MVGClient:
 
+    timeout = 5
 
 
     def __init__(self, station, backend='phantomjs'):
@@ -29,12 +30,10 @@ class MVGClient:
         :param backend: str, ['chrome', 'phantomjs_linux64']
         """
 
-        self.station = station
-
-        url_fmt_str = "http://www.mvg-live.de/MvgLive/MvgLive.jsp#haltestelle={station}&gehweg=0&zeilen=7&ubahn=true&bus=true&tram=true&sbahn=false"
-        self.url = url_fmt_str.format(station=station)
 
         self.browser = backends[backend]() if type(backend) == str else backend
+        self._station = station
+
 
 
     def __enter__(self):
@@ -45,12 +44,29 @@ class MVGClient:
         self.browser.close()
         self.browser.quit()
 
-    def connect(self):
+    @property
+    def station(self):
+        return self._station
+
+    @station.setter
+    def station(self, name):
+        self._station = name
+        self.connect(attempts=2)  # need to change the url to fill out the form, and run it twice for some reason.
+
+    @property
+    def url(self):
+        fmt_str = "http://www.mvg-live.de/MvgLive/MvgLive.jsp#haltestelle={station}&gehweg=0&zeilen=7&ubahn=true&bus=true&tram=true&sbahn=false"
+        return fmt_str.format(station=self._station)
+
+    def connect(self, attempts=1):
         """Send the browser to the url"""
-        self.browser.get(self.url)
+
+        for attempt in range(attempts):
+            self.browser.get(self.url)
+
 
         try:
-            WebDriverWait(self.browser, timeout=3).until(
+            WebDriverWait(self.browser, timeout=self.timeout).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "departureViewHaltestellenColumn"))
             )
         except TimeoutException:
