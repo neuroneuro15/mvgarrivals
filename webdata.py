@@ -56,6 +56,8 @@ class MVGClient:
         except TimeoutException:
             raise TimeoutError("Arrivals Table either not loaded in time, or not available at all.")
 
+
+
     @property
     def arrivals(self):
         """
@@ -65,10 +67,15 @@ class MVGClient:
         """
         soup = bs4.BeautifulSoup(self.browser.page_source, 'lxml')
 
-        arrivals = []
-        tables = soup.findAll('table', attrs={'class': 'content'})
+        refresh_button = soup.find('div', attrs={'class': 'gwt-Hyperlink show_details'}).a
+        refresh_div = self.browser.find_element_by_class_name('gwt-Hyperlink')
+        refresh_div.click()
 
-        for row in tables[1].findAll('tr')[2:]:
+        arrival_table = soup.findAll('table', attrs={'class': 'content'})[1]
+
+
+        arrivals = []
+        for row in arrival_table.findAll('tr')[2:]:
             data = [col.text for col in row.findAll('td')]
 
             # images/size30/produkt/U-Bahn.gif
@@ -78,6 +85,7 @@ class MVGClient:
 
             arrival = Arrival(dest=data[2], type=traintype, mins=int(data[4]))
             arrivals.append(arrival)
+
 
         return arrivals
 
