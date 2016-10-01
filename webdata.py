@@ -24,8 +24,8 @@ class MVGClient:
 
     def __init__(self, station, backend='phantomjs'):
         """
-
-        :param station:
+        Client that connects a selenium browser to the mvg-live.de web site and gets arrival data.
+        :param station: str, station name (ex: 'Haderner Stern"
         :param backend: str, ['chrome', 'phantomjs_linux64']
         """
 
