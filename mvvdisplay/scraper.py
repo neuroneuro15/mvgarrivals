@@ -9,10 +9,8 @@ from functools import partial
 from os import path
 
 
-driver_path = './drivers'
-log_path = '/logs'
-
-Arrival = namedtuple("Arrival", "dest type mins")
+driver_path = path.join(path.dirname(__file__), 'drivers')
+log_path = path.join(path.dirname(__file__), 'logs')
 
 backends = {'chrome': partial(webdriver.Chrome, executable_path=path.join(driver_path, 'chromedriver_linux64')),
             'phantomjs': partial(webdriver.PhantomJS, executable_path=path.join(driver_path, 'phantomjs_linux64')),
@@ -99,7 +97,7 @@ class MVGClient:
             traintype_img = row.find('td').img['src']
             traintype = 'ubahn' if 'U-Bahn' in traintype_img else 'bus'
 
-            arrival = Arrival(dest=data[2], type=traintype, mins=int(data[4]))
+            arrival = dict(dest=data[2], type=traintype, mins=int(data[4]))
             arrivals.append(arrival)
 
 
