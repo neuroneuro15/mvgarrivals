@@ -1,7 +1,6 @@
 from mvvdisplay import app
 from mvvdisplay.scraper import MVGClient
 
-
 from flask import json
 
 

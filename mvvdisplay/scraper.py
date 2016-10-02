@@ -7,13 +7,16 @@ import bs4
 from collections import namedtuple
 from functools import partial
 from os import path
-
+import os
 
 driver_path = path.join(path.dirname(__file__), 'drivers')
+#driver_path = '/usr/local/
+
+
 log_path = path.join(path.dirname(__file__), 'logs')
 
 backends = {'chrome': partial(webdriver.Chrome, executable_path=path.join(driver_path, 'chromedriver_linux64')),
-            'phantomjs': partial(webdriver.PhantomJS, executable_path=path.join(driver_path, 'phantomjs_linux64')),
+            'phantomjs': partial(webdriver.PhantomJS, executable_path=path.join(driver_path, 'phantomjs_linux64'), service_log_path=os.path.devnull),
             }
 
 class MVGClient:
